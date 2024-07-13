@@ -75,10 +75,12 @@ const Home: NextPage = () => {
 export default Home;
 
 const PageContent = () => {
+  const { address: connectedAddress, isConnected } = useAccount();
   return (
     <>
       <Box textAlign="center" className="box-container">
-        <div className="container">
+        <div className={isConnected ? "container left" : "container"}>
+          <h1>Welcome to your new life</h1>
           <h1>Game rules</h1>
           <ul>
             <li>Default Retirement Age increases every time someone retires.</li>
@@ -88,20 +90,19 @@ const PageContent = () => {
             <li>The more people you bring in, the more money you make.</li>
             <li>The more money you contribute, the earlier you can retire.</li>
           </ul>
+          {!isConnected && <h1>Please connect your wallet to start</h1>}
         </div>
 
-        {/* <input type="text" placeholder="Type here" className="input w-full max-w-xs" /> */}
-
-        {/* <Input className="button" type="number" placeholder="Contribution amount (ETH)" value="0" required /> */}
-
-        <div className="right">
-          <div className="container top-right">
-            <PlayerStatus />
+        {isConnected && (
+          <div className="right">
+            <div className="container top-right">
+              <PlayerStatus />
+            </div>
+            <div className="container bottom-right">
+              <Actions />
+            </div>
           </div>
-          <div className="container bottom-right">
-            <Actions />
-          </div>
-        </div>
+        )}
       </Box>
     </>
   );
