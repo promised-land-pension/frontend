@@ -90,6 +90,10 @@ const PageContent = () => {
           </ul>
         </div>
 
+        {/* <input type="text" placeholder="Type here" className="input w-full max-w-xs" /> */}
+
+        {/* <Input className="button" type="number" placeholder="Contribution amount (ETH)" value="0" required /> */}
+
         <div className="right">
           <div className="container top-right">
             <PlayerStatus />
