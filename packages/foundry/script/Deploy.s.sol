@@ -1,8 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../contracts/YourContract.sol";
+import "../contracts/pension.sol";
+import "../contracts/storageLib.sol";
 import "./DeployHelpers.s.sol";
+import {MintableSuperToken} from "../test/MintableSuperToken.sol";
+
+interface IMint {
+    function initialize(address factory, string memory _name, string memory _symbol) external;
+    function mint(address to, uint256 amount ) external;
+}
 
 contract DeployScript is ScaffoldETHDeploy {
   error InvalidPrivateKey(string);
@@ -16,12 +23,32 @@ contract DeployScript is ScaffoldETHDeploy {
     }
     vm.startBroadcast(deployerPrivateKey);
 
-    YourContract yourContract = new YourContract(vm.addr(deployerPrivateKey));
-    console.logString(
-      string.concat(
-        "YourContract deployed at: ", vm.toString(address(yourContract))
-      )
-    );
+
+
+    //create token
+    address STFactory = 0x87560833d59Be057aFc63cFFa3fc531589Ba428F; //scroll sepolia
+    //BASE 0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3;
+
+    ISuperToken time = ISuperToken(address(new MintableSuperToken()));
+    IMint mintTime = IMint(address(time));
+    
+    console.log("deployed time: ", address(time));
+    mintTime.initialize(STFactory, "time", "time");
+    console.log("initialize time");
+
+    ISuperToken cash = ISuperToken(address(new MintableSuperToken()));
+    IMint mintCash = IMint(address(cash));
+    
+    console.log("deployed cash: ", address(cash));
+    mintCash.initialize(STFactory, "cash", "cash");
+    console.log("initialize cash");
+
+    Pensions pensionContract = new Pensions(cash, time);
+    address pensionContractAddress = address(pensionContract);
+    
+    mintTime.mint(pensionContractAddress, 1e22 ether);
+    mintCash.mint(0xAa163c47065c22D17Ed1c47E3E244337D2056c17, 1e22 ether);
+    console.log("deployed pensionContract: ", address(pensionContract));
 
     vm.stopBroadcast();
 

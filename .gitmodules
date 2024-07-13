@@ -7,3 +7,6 @@
 [submodule "packages/foundry/lib/solidity-bytes-utils"]
 	path = packages/foundry/lib/solidity-bytes-utils
 	url = https://github.com/gnsps/solidity-bytes-utils
+[submodule "packages/foundry/lib/superfluid-protocol-monorepo"]
+	path = packages/foundry/lib/superfluid-protocol-monorepo
+	url = https://github.com/superfluid-finance/protocol-monorepo

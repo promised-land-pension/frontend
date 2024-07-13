@@ -2,8 +2,8 @@
 pragma solidity ^0.8.11;
 
 import "forge-std/Test.sol";
-import "../src/pension.sol";
-import {MintableSuperToken} from "./contracts/MintableSuperToken.sol";
+import "../contracts/pension.sol";
+import {MintableSuperToken} from "./MintableSuperToken.sol";
 import {
     BatchOperation,
     ISuperfluid
@@ -14,7 +14,7 @@ import {ERC1820RegistryCompiled} from
     "@superfluid-finance/ethereum-contracts/contracts/libs/ERC1820RegistryCompiled.sol";
 import { TestToken } from "@superfluid-finance/ethereum-contracts/contracts/utils/TestToken.sol";
 import { SuperToken } from "@superfluid-finance/ethereum-contracts/contracts/superfluid/SuperToken.sol";
-import {StorageLib, Storage} from "../src/storageLib.sol";
+import {StorageLib, Storage} from "../contracts/storageLib.sol";
 
 
 interface IMint {

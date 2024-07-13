@@ -2,7 +2,6 @@
 pragma solidity ^0.8.19;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import {BasicParticle, SemanticMoney, FlowRate, Value, Time} from "@superfluid-finance/solidity-semantic-money/src/SemanticMoney.sol";
 
 struct User {
     address before;
