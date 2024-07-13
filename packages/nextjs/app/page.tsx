@@ -321,13 +321,6 @@ function Actions() {
   ) : (
     <>
       <Text>Please connect your wallet to start playing.</Text>
-      <ul>
-        {connectors.map(connector => (
-          <li key={connector.id}>
-            <Button onClick={() => connect({ connector })}>{connector.name}</Button>
-          </li>
-        ))}
-      </ul>
     </>
   );
 }
