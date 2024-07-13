@@ -149,7 +149,7 @@ contract Pensions is CFASuperAppBase {
     function onFlowUpdated(
         ISuperToken, /*superToken*/
         address sender,
-        int96 previousFlowRate,
+        int96 /*previousFlowRate*/,
         uint256 /*lastUpdated*/,
         bytes calldata ctx
     ) internal override returns (bytes memory newCtx) {

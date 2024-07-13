@@ -31,8 +31,6 @@ scroll = "https://rpc.scroll.io"
 [etherscan]
 polygonMumbai = { key = "${ETHERSCAN_API_KEY}" }
 sepolia = { key = "${ETHERSCAN_API_KEY}" }
-scrollSepolia = { key = "${SCROLL_SEPOLIA_ETHERSCAN_API_KEY}" }
-
 
 [fmt]
 multiline_func_header = "params_first"
