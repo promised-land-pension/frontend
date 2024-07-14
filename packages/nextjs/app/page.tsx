@@ -27,9 +27,10 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { simulateContract, writeContract, getAccount } from "@wagmi/core";
+import { injected } from "@wagmi/connectors";
+import { getAccount, simulateContract, writeContract } from "@wagmi/core";
 import type { NextPage } from "next";
-import { Abi, http, parseEther, custom } from "viem";
+import { Abi, custom, erc20Abi, http, parseEther } from "viem";
 import {
   createConfig,
   useAccount,
@@ -40,13 +41,11 @@ import {
   useReadContracts,
   useWriteContract,
 } from "wagmi";
-import { injected } from '@wagmi/connectors'
-
 import { avalancheFuji, mainnet, scrollSepolia } from "wagmi/chains";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { addresses } from "~~/assets/addresses";
-import { Address } from "~~/components/scaffold-eth";
 import FlowingBalance from "~~/components/FlowingBalance";
+import { Address } from "~~/components/scaffold-eth";
 
 // **Contract Addresses**
 const PENSIONS_CONTRACT_ADDRESS = "0xAaa603469595050Eb3Be4c4735DB50ef7cEEfd6d";
@@ -83,11 +82,13 @@ export default Home;
 
 const PageContent = () => {
   const { address: connectedAddress, isConnected } = useAccount();
+
   return (
     <>
       <Box textAlign="center" className="box-container">
-        <div className={isConnected ? "container left" : "container center"}
-          style={{lineHeight: "2", fontSize: "1.5rem", fontFamily: "sans-serif"}}
+        <div
+          className={isConnected ? "container left" : "container center"}
+          style={{ lineHeight: "1.5", fontSize: "1.2rem", fontFamily: "sans-serif" }}
         >
           <h1>Welcome to your new life</h1>
           <h1>Game rules</h1>
@@ -99,6 +100,9 @@ const PageContent = () => {
             <li>The more money you contribute, the earlier you can retire.</li>
           </ul>
           {!isConnected && <h1>Please connect your wallet to start</h1>}
+          <div className="container bottom-right">
+            <Actions />
+          </div>
         </div>
 
         {isConnected && (
@@ -106,9 +110,17 @@ const PageContent = () => {
             <div className="container top-right">
               <PlayerStatus />
             </div>
-            <div className="container bottom-right">
+            {/* <div style={{ fontSize: "1.1rem", fontFamily: "sans-serif" }}>
+              <span className="mr-2">Balance: </span>
+              {data && (
+                <span>
+                  {Number(data.toString()) / 10 ** 18} $<span style={{ color: "cyan", fontWeight: "bold" }}>APE</span>
+                </span>
+              )}
+            </div> */}
+            {/* <div className="container bottom-right">
               <Actions />
-            </div>
+            </div> */}
           </div>
         )}
       </Box>
@@ -132,7 +144,6 @@ function PlayerStatus() {
     functionName: "retirementAge",
   });
 
-
   function formatTimeBalance(balance: bigint) {
     console.log("about to format balance", balance);
     return balance ? (Number(balance.toString()) / 1e18).toFixed(5) : "Loading...";
@@ -154,8 +165,7 @@ function PlayerStatus() {
       ],
       chainId: scrollSepolia.id,
     });
-
-  }
+  };
 
   return (
     isConnected && (
@@ -163,17 +173,35 @@ function PlayerStatus() {
         <CardBody>
           <Stack spacing="3">
             <Heading size="md">Player Status</Heading>
-            {userTimeBalance ? <Text>Worked so far: {(Number(userTimeBalance)/1e18 /60/60).toFixed(2)} YEARS</Text> : <Text>Balance (TIME): Loading...</Text>}
-            {retirementAge ? <Text>Retirement Age: {Number(retirementAge.toString())/60/60} YEARS</Text> : <Text>Retirement Age: Loading...</Text>}
+            {userTimeBalance ? (
+              <Text>Worked so far: {(Number(userTimeBalance) / 1e18 / 60 / 60).toFixed(2)} YEARS</Text>
+            ) : (
+              <Text>Balance (TIME): Loading...</Text>
+            )}
+            {retirementAge ? (
+              <Text>Retirement Age: {Number(retirementAge.toString()) / 60 / 60} YEARS</Text>
+            ) : (
+              <Text>Retirement Age: Loading...</Text>
+            )}
             <Divider />
             {/* Conditionally render the claim button */}
             {userTimeBalance ? (
               retirementAge && Number(userTimeBalance) >= Number(retirementAge) * 1e18 ? (
-                <Button onClick={handleClaimPension} style={{width: "10em"}}>Retire</Button>
+                <Button onClick={handleClaimPension} style={{ width: "10em" }}>
+                  Retire
+                </Button>
               ) : (
                 <>
-                <Text>You will be eligible for a pension very soon.</Text>
-                {retirementAge && <Text>Just keep working for {Number((Number(retirementAge.toString()) - Number(userTimeBalance.toString())/1e18) / 60 / 60).toFixed(2)} more years. </Text>}
+                  <Text>You will be eligible for a pension very soon.</Text>
+                  {retirementAge && (
+                    <Text>
+                      Just keep working for{" "}
+                      {Number(
+                        (Number(retirementAge.toString()) - Number(userTimeBalance.toString()) / 1e18) / 60 / 60,
+                      ).toFixed(2)}{" "}
+                      more years.{" "}
+                    </Text>
+                  )}
                 </>
               )
             ) : (
@@ -208,7 +236,7 @@ function Actions() {
     if (monthlyFlowRate) {
       const monthlyFlowrateValue = Number(monthlyFlowRate);
       if (!isNaN(monthlyFlowrateValue)) {
-        const normalizedFlowRate = ((monthlyFlowrateValue * 1e18) / (365/12 * 60 * 60 * 24)).toFixed(0);
+        const normalizedFlowRate = ((monthlyFlowrateValue * 1e18) / ((365 / 12) * 60 * 60 * 24)).toFixed(0);
         setFlowRate(normalizedFlowRate);
       }
     }
@@ -234,7 +262,7 @@ function Actions() {
   console.log(streamData);
 
   const handleCreateStream = async () => {
-      await writeContract({
+    await writeContract({
       abi: CFAv1ForwarderAbi,
       address: addresses.CFAv1ForwarderScrollSepolia as `0x${string}`,
       functionName: "createFlow",
@@ -247,22 +275,28 @@ function Actions() {
       ],
       chainId: scrollSepolia.id,
     });
-
   };
 
   const { writeContract, status, error, data } = useWriteContract();
 
   useEffect(() => {
     console.log("Transaction successful!");
-      toast({
-        title: "Transaction confirmed",
-        description: <>Transaction hash: ${data} - see on <a href="https://eth.blockscout.com/tx/0xc84df957440156bd918769bd9809323b552041258f389f5b54c6f61c735a03c3">blockscout</a> </>,
-        status: "info",
-        duration: 5000,
-        isClosable: true,
-      });
-      closeDialog();
-      setStartTime(new Date());
+    toast({
+      title: "Transaction confirmed",
+      description: (
+        <>
+          Transaction hash: ${data} - see on{" "}
+          <a href="https://eth.blockscout.com/tx/0xc84df957440156bd918769bd9809323b552041258f389f5b54c6f61c735a03c3">
+            blockscout
+          </a>{" "}
+        </>
+      ),
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+    });
+    closeDialog();
+    setStartTime(new Date());
   }, [data]);
 
   const handleUpdateStream = async () => {
@@ -277,31 +311,47 @@ function Actions() {
         BigInt(flowRate),
         "0x",
       ],
-      chainId: scrollSepolia.id
+      chainId: scrollSepolia.id,
     });
   };
 
+  const { data: balanceData } = useReadContract({
+    address: addresses.cashSepoliaScroll,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [address as `0x${string}`],
+  });
+
   return isConnected ? (
     <Card mt="6">
+      <div style={{ fontSize: "1.1rem", fontFamily: "sans-serif" }}>
+        <span className="mr-2">Balance: </span>
+        {balanceData && (
+          <span>
+            {Number(balanceData.toString()) / 10 ** 18} $<span style={{ color: "cyan", fontWeight: "bold" }}>APE</span>
+          </span>
+        )}
+      </div>
       <CardBody>
         <Stack spacing="3">
           <Heading size="md">Actions</Heading>
           {
             // if stream exists, show stream + update button
-            streamData 
-            ? (
+            streamData ? (
               <>
-                <Text>Streaming {(Number((streamData* BigInt(365/12 * 24 * 3600)).toString())/1e18).toFixed(5)} APE/month</Text>
+                <Text>
+                  Streaming {(Number((streamData * BigInt((365 / 12) * 24 * 3600)).toString()) / 1e18).toFixed(5)}{" "}
+                  APE/month
+                </Text>
                 <Text>
                   <FlowingBalance
                     startingBalance={BigInt(0)}
                     startingBalanceDate={startTime}
                     flowRate={streamData as bigint}
-                  /> Streamed so far.
+                  />{" "}
+                  Streamed so far.
                 </Text>
-                <Button
-                  onClick={openDialog}
-                >Update Stream</Button>
+                <Button onClick={openDialog}>Update Stream</Button>
               </>
             ) : (
               // if stream doesn't exist, show create stream button
@@ -319,34 +369,31 @@ function Actions() {
           <ModalBody>
             To start working honestly, we kindly ask you to give us your money by creating a stream. Select the amount
             of APE you want to stream monthly.
-            { streamData ? (
+            {streamData ? (
               <>
-              <Text>Currently Streaming {(Number((streamData* BigInt(365/12 * 24 * 3600)).toString())/1e18).toFixed(5)} APE/month</Text>
-              <Input onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} placeholder="APE/month"/>
+                <Text>
+                  Currently Streaming{" "}
+                  {(Number((streamData * BigInt((365 / 12) * 24 * 3600)).toString()) / 1e18).toFixed(5)} APE/month
+                </Text>
+                <Input onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} placeholder="APE/month" />
               </>
             ) : (
-              <Input onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} placeholder="APE/month"/>
+              <Input onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} placeholder="APE/month" />
             )}
           </ModalBody>
           <ModalFooter>
-            <Button onClick={closeDialog} style={{marginRight: "10px"}}>Cancel</Button>
-            {
-              !streamData ? (
-                <Button
-                  type="submit"
-                  onClick={handleCreateStream}
-                >
-                  Create stream
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  onClick={handleUpdateStream}
-                >
-                  Update stream
-                </Button>
-              )
-            }
+            <Button onClick={closeDialog} style={{ marginRight: "10px" }}>
+              Cancel
+            </Button>
+            {!streamData ? (
+              <Button type="submit" onClick={handleCreateStream}>
+                Create stream
+              </Button>
+            ) : (
+              <Button type="submit" onClick={handleUpdateStream}>
+                Update stream
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

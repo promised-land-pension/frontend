@@ -19,7 +19,7 @@ export const Footer = () => {
 
   return (
     <div className="min-h-0 py-5 px-1 mb-11 lg:mb-0">
-      <div>
+      {/* <div>
         <div className="fixed flex justify-between items-center w-full z-10 p-4 bottom-0 left-0 pointer-events-none">
           <div className="flex flex-col md:flex-row gap-2 pointer-events-auto">
             {nativeCurrencyPrice > 0 && (
@@ -40,13 +40,13 @@ export const Footer = () => {
               </>
             )}
           </div>
-          <SwitchTheme className={`pointer-events-auto ${isLocalNetwork ? "self-end md:self-auto" : ""}`} />
         </div>
-      </div>
+      </div> */}
       <div className="w-full">
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
-            ultimate Number Go Up technology - pension go up
+            ultimate Number Go Up technology - pension go up -
+            https://eth.blockscout.com/tx/0xc84df957440156bd918769bd9809323b552041258f389f5b54c6f61c735a03c3
           </div>
         </ul>
       </div>

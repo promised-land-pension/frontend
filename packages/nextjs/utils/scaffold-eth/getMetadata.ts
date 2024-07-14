@@ -44,7 +44,7 @@ export const getMetadata = ({
       images: [imageUrl],
     },
     icons: {
-      icon: [{ url: "/favicon.png", sizes: "32x32", type: "image/png" }],
+      icon: [{ url: "/ponzi.jpeg", sizes: "32x32", type: "image/png" }],
     },
   };
 };
