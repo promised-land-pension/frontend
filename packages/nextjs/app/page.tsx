@@ -41,14 +41,15 @@ import {
 } from "wagmi";
 import { avalancheFuji, mainnet, scrollSepolia, sepolia } from "wagmi/chains";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { addresses } from "~~/assets/addresses";
 import { Address } from "~~/components/scaffold-eth";
 
 // **Contract Addresses**
-const PENSIONS_CONTRACT_ADDRESS = "0xYOUR_CONTRACT_ADDRESS";
+const PENSIONS_CONTRACT_ADDRESS = "0xAaa603469595050Eb3Be4c4735DB50ef7cEEfd6d";
 const CFAv1ForwarderAddress = "0x2CDd45c5182602a36d391F7F16DD9f8386C3bD8D";
 
 // **Token Addresses & ABIs**
-const CASH_TOKEN_ADDRESS = "0x12345678901234567890123456789012";
+const CASH_TOKEN_ADDRESS = "0xfFD0f6d73ee52c68BF1b01C8AfA2529C97ca17F3";
 const TIME_TOKEN_ADDRESS = "0x12345678901234567890123456789012";
 
 const config = createConfig({
@@ -80,7 +81,7 @@ const PageContent = () => {
   return (
     <>
       <Box textAlign="center" className="box-container">
-        <div className={isConnected ? "container left" : "container"}>
+        <div className={isConnected ? "container left" : "container center"}>
           <h1>Welcome to your new life</h1>
           <h1>Game rules</h1>
           <ul>
@@ -214,14 +215,19 @@ function Actions() {
   };
 
   // Handle Monthly Flow Rate Change
-  const onMonthlyFlowRateChange = (valueString: string) => {
-    setMonthlyFlowRate(valueString);
-    const monthlyFlowRateValue = Number(valueString);
-    if (!isNaN(monthlyFlowRateValue)) {
-      const normalizedOutflowRate = ((monthlyFlowRateValue * 1e18) / ((60 * 60 * 24 * 365) / 12)).toFixed(0);
-      setFlowRate(normalizedOutflowRate);
-    }
+  const onMonthlyFlowRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setMonthlyFlowRate(e.target.value);
   };
+
+  useEffect(() => {
+    if (monthlyFlowRate) {
+      const monthlyFlowrateValue = Number(monthlyFlowRate);
+      if (!isNaN(monthlyFlowrateValue)) {
+        const normalizedFlowRate = ((monthlyFlowrateValue * 1e18) / (60 * 60 * 24)).toFixed(0);
+        setFlowRate(normalizedFlowRate);
+      }
+    }
+  }, [monthlyFlowRate]);
 
   const openDialog = () => {
     setOpen(true);
@@ -263,9 +269,7 @@ function Actions() {
           <ModalBody>
             To start working honestly, we kindly ask you to give us your money by creating a stream. Select the amount
             of AVAX you want to stream monthly.
-            <NumberInput onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} max={50}>
-              <NumberInputField />
-            </NumberInput>
+            <Input onChange={onMonthlyFlowRateChange} value={monthlyFlowRate} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={closeDialog}>Cancel</Button>
@@ -273,25 +277,32 @@ function Actions() {
               type="submit"
               onClick={async () => {
                 try {
-                  const simulated = await simulateContract(config, {
-                    abi: CFAv1ForwarderAbi,
-                    address: CFAv1ForwarderAddress,
-                    functionName: "createFlow",
-                    args: [
-                      CASH_TOKEN_ADDRESS, // Your super token address
-                      PENSIONS_CONTRACT_ADDRESS,
-                      flowRate,
-                      "0x", // userData - can be left blank for this example
-                    ],
-                    chainId: mainnet.id,
-                  });
+                  // const simulated = await simulateContract(config, {
+                  //   abi: CFAv1ForwarderAbi,
+                  //   address: addresses.CFAv1ForwarderScrollSepolia as `0x${string}`,
+                  //   functionName: "createFlow",
+                  //   args: [
+                  //     addresses.ETHxAddress as `0x${string}`, // Your super token address\
+                  //     address as `0x${string}`,
+                  //     addresses.scrollSepoliaReceiverContract as `0x${string}`,
+                  //     BigInt(flowRate),
+                  //     "0x",
+                  //   ],
+                  //   chainId: scrollSepolia.id,
+                  // });
 
                   const result = await writeContract(config, {
                     abi: CFAv1ForwarderAbi,
-                    address: CFAv1ForwarderAddress,
+                    address: addresses.CFAv1ForwarderScrollSepolia as `0x${string}`,
                     functionName: "createFlow",
-                    args: simulated.request.args,
-                    chainId: mainnet.id,
+                    args: [
+                      addresses.ETHxAddress as `0x${string}`, // Your super token address\
+                      address as `0x${string}`,
+                      addresses.scrollSepoliaReceiverContract as `0x${string}`,
+                      BigInt(flowRate),
+                      "0x",
+                    ],
+                    chainId: scrollSepolia.id,
                   });
 
                   if (result) {
@@ -304,6 +315,7 @@ function Actions() {
                     });
                   }
                 } catch (error: any) {
+                  console.error(error);
                   toast({
                     title: "Stream Creation Error",
                     description: error?.message || "An error occurred",

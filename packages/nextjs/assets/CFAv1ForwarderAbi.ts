@@ -236,4 +236,4 @@ export const CFAv1ForwarderAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;
