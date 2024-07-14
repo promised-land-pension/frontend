@@ -26,7 +26,8 @@ contract DeployScript is ScaffoldETHDeploy {
 
 
     //create token
-    address STFactory = 0x87560833d59Be057aFc63cFFa3fc531589Ba428F; //scroll sepolia
+    // address STFactory = 0x254C2e152E8602839D288A7bccdf3d0974597193; //eth sepolia
+    address STFactory = 0x87560833d59Be057aFc63cFFa3fc531589Ba428F;
     //BASE 0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3;
 
     ISuperToken time = ISuperToken(address(new MintableSuperToken()));
@@ -47,7 +48,7 @@ contract DeployScript is ScaffoldETHDeploy {
     address pensionContractAddress = address(pensionContract);
     
     mintTime.mint(pensionContractAddress, 1e22 ether);
-    mintCash.mint(0xAa163c47065c22D17Ed1c47E3E244337D2056c17, 1e22 ether);
+    mintCash.mint(0xAA7dBAdAA2F1ADed7e9299947B3a94ea35eaB069, 1e22 ether);
     console.log("deployed pensionContract: ", address(pensionContract));
 
     vm.stopBroadcast();

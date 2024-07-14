@@ -39,7 +39,7 @@ import {
   useReadContract,
   useReadContracts,
 } from "wagmi";
-import { avalancheFuji, mainnet, sepolia } from "wagmi/chains";
+import { avalancheFuji, mainnet, scrollSepolia, sepolia } from "wagmi/chains";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 
@@ -52,10 +52,11 @@ const CASH_TOKEN_ADDRESS = "0x12345678901234567890123456789012";
 const TIME_TOKEN_ADDRESS = "0x12345678901234567890123456789012";
 
 const config = createConfig({
-  chains: [mainnet, sepolia, avalancheFuji],
+  chains: [mainnet, sepolia, scrollSepolia, avalancheFuji],
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
+    [scrollSepolia.id]: http(),
     [avalancheFuji.id]: http(),
   },
 });

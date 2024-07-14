@@ -5,7 +5,7 @@ libs = ['lib']
 fs_permissions = [{ access = "read-write", path = "./"}]
 
 [rpc_endpoints]
-default_network = "http://127.0.0.1:8545"
+default_network = "https://sepolia-rpc.scroll.io"
 localhost = "http://127.0.0.1:8545"
 
 mainnet = "https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}"
@@ -31,6 +31,7 @@ scroll = "https://rpc.scroll.io"
 [etherscan]
 polygonMumbai = { key = "${ETHERSCAN_API_KEY}" }
 sepolia = { key = "${ETHERSCAN_API_KEY}" }
+scrollSepolia = { key ="${SCROLLSCAN_API_KEY}" }
 
 [fmt]
 multiline_func_header = "params_first"

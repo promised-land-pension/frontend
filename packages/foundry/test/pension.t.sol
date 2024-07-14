@@ -68,7 +68,9 @@ contract PensionsTest is Test {
     function setUp() public {
 
         //create token
-        address STFactory = 0x87560833d59Be057aFc63cFFa3fc531589Ba428F; //scroll sepolia
+        // address STFactory = 0x254C2e152E8602839D288A7bccdf3d0974597193; //eth sepolia
+            address STFactory = 0x87560833d59Be057aFc63cFFa3fc531589Ba428F;
+
         //BASE 0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3;
 
         vm.startPrank(admin);
